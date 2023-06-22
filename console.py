@@ -73,7 +73,7 @@ class HBNBCommand(cmd.Cmd):
                 pline = pline[2].strip()  # pline is now str
                 if pline:
                     # check for *args or **kwargs
-                    if pline[0] is '{' and pline[-1] is'}'\
+                    if pline[0] == '{' and pline[-1] == '}'\
                             and type(eval(pline)) is dict:
                         _args = pline
                     else:
@@ -132,23 +132,23 @@ class HBNBCommand(cmd.Cmd):
         storage.save()
         print(new_instance.id)
         storage.save()
-    
+
     def create_param(self, args=None):
         if not args:
             return 0
 
         if args[0] not in HBNBCommand.classes:
             print("** class doesn't exist **")
-            return 0 
+            return 0
 
         new_instance = HBNBCommand.classes[args[0]]()
         print(new_instance.id)
         storage.save()
 
-        iter = 0 
+        iter = 0
         args = args[1:]
         self.sub_args = []
-        
+
         while (iter < len(args)):
             if "=" not in args[iter]:
                 iter += 1
@@ -166,25 +166,26 @@ class HBNBCommand(cmd.Cmd):
 
             attr = self.sub_args[0]
             val = self.sub_args[1]
-            val = val[1:-1]
-
-            print("VAL CONTENT: ", val)
-            val
 
             if "." in val:
                 try:
-                    val = float(val)
+                    val = float(val.lstrip("\"'").rstrip("\"'"))
                 except:
                     pass
             else:
                 try:
-                    val= int(val)
+                    val = int(val.lstrip("\"'").rstrip("\"'"))
                 except:
                     pass
 
-            if type(str) == str:
-                val= val.replace("_", " ")
-            
+            if (type(val) == str):
+                if val[0] != "\"" and val[-1] != "\"":
+                    iter += 1
+                    continue
+                else:
+                    val = val.lstrip("\"").rstrip("\"")
+                    val = val.replace('"', '\"')
+                    val = val.replace("_", " ")
 
             print("VALUE TYPE: ", type(val))
             print("VALUE: ", val)
@@ -340,7 +341,7 @@ class HBNBCommand(cmd.Cmd):
                 args.append(v)
         else:  # isolate args
             args = args[2]
-            if args and args[0] is '\"':  # check for quoted arg
+            if args and args[0] == '\"':  # check for quoted arg
                 second_quote = args.find('\"', 1)
                 att_name = args[1:second_quote]
                 args = args[second_quote + 1:]
@@ -348,10 +349,10 @@ class HBNBCommand(cmd.Cmd):
             args = args.partition(' ')
 
             # if att_name was not quoted arg
-            if not att_name and args[0] is not ' ':
+            if not att_name and args[0] != ' ':
                 att_name = args[0]
             # check for quoted val arg
-            if args[2] and args[2][0] is '\"':
+            if args[2] and args[2][0] == '\"':
                 att_val = args[2][1:args[2].find('\"', 1)]
 
             # if att_val was not quoted arg
