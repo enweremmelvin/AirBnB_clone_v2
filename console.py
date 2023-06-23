@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 """ Console Module """
-import cmd
-import sys
+import cmd, sys, json
 from models.base_model import BaseModel
 from models.__init__ import storage
 from models.user import User
@@ -179,7 +178,7 @@ class HBNBCommand(cmd.Cmd):
                     pass
 
             if (type(val) == str):
-                if val[0] != "\"" and val[-1] != "\"":
+                if val[0] != "\"" or val[-1] != "\"":
                     iter += 1
                     continue
                 else:
@@ -187,8 +186,7 @@ class HBNBCommand(cmd.Cmd):
                     val = val.replace('"', '\"')
                     val = val.replace("_", " ")
 
-            print("VALUE TYPE: ", type(val))
-            print("VALUE: ", val)
+            # add attribute to class instance
             new_instance.__dict__[attr] = val
             iter  += 1
 
@@ -282,6 +280,9 @@ class HBNBCommand(cmd.Cmd):
             for k, v in storage._FileStorage__objects.items():
                 print_list.append(str(v))
 
+        # dump print_list to json to turn off python's \
+        #+ dictionary representation artifact
+        print_list = json.dumps(print_list)
         print(print_list)
 
     def help_all(self):
