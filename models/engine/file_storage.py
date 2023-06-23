@@ -63,6 +63,8 @@ class FileStorage:
             pass
 
     def delete(self, obj=None):
+        """ delete object instance given dictionary of objects """
+
         if not obj:
             return
 
